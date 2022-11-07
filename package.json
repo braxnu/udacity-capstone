@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node index.ts",
-    "test": "echo OK"
+    "start": "ts-node src/index.ts",
+    "test": "eslint src && tsc --noEmit src/*"
   },
   "repository": {
     "type": "git",
@@ -23,6 +23,9 @@
   },
   "devDependencies": {
     "@types/node": "^18.11.9",
+    "@typescript-eslint/eslint-plugin": "^5.42.0",
+    "@typescript-eslint/parser": "^5.42.0",
+    "eslint": "^8.27.0",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.4"
   }
