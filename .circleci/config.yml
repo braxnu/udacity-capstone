@@ -17,7 +17,8 @@ jobs:
     steps:
       - setup_remote_docker
       - checkout
-      - run: docker build -t hello-node .
+      - run: docker build -t braxnu/hello-node .
+      - run: docker push braxnu/hello-node
 
 workflows:
   hello-node:
