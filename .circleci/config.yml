@@ -24,13 +24,9 @@ jobs:
     docker:
       - image: cimg/aws:2022.11
     steps:
-      - checkout
-      - run: kubectl config view
       - run: aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name hello-node
-      - run: echo "$EKS_CA_DATA" > ~/.k8.ca.crt
-      - run: kubectl config set-cluster hello-node --server=$K8_SERVER --embed-certs --certificate-authority=~/.k8.ca.crt
-      - run: kubectl config view
-      - run: ./update-cluster.sh
+      - run: kubectl set image deployment.apps/$DEPLOYMENT_NAME hello-node=braxnu/hello-node --server $K8_SERVER
+      - run: kubectl rollout restart deployment.apps/$DEPLOYMENT_NAME --server $K8_SERVER
 
 workflows:
   hello-node:
