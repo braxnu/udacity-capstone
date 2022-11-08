@@ -17,7 +17,9 @@ jobs:
     steps:
       - setup_remote_docker
       - checkout
-      - run: docker build -t hello-node .
+      - run: docker build -t braxnu/hello-node .
+      - run: echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USERNAME --password-stdin
+      - run: docker push braxnu/hello-node
   update_stack:
     docker:
       - image: cimg/aws:2022.11
