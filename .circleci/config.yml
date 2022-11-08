@@ -24,9 +24,9 @@ jobs:
     docker:
       - image: cimg/aws:2022.11
     steps:
-      - run: aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name hello-node
-      - run: kubectl set image deployment.apps/$DEPLOYMENT_NAME hello-node=braxnu/hello-node --server $K8_SERVER
-      - run: kubectl rollout restart deployment.apps/$DEPLOYMENT_NAME --server $K8_SERVER
+      - run: aws eks --region ${AWS_DEFAULT_REGION} update-kubeconfig --name hello-node
+      - run: kubectl set image deployment.apps/${DEPLOYMENT_NAME} hello-node=braxnu/hello-node --server ${K8_SERVER}
+      - run: kubectl rollout restart deployment.apps/${DEPLOYMENT_NAME} --server ${K8_SERVER}
 
 workflows:
   hello-node:
