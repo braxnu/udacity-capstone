@@ -25,6 +25,8 @@ jobs:
       - image: cimg/aws:2022.11
     steps:
       - checkout
+      - run: aws sts get-caller-identity
+      - run: aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name hello-node
       - run: ./update-cluster.sh
 
 workflows:
