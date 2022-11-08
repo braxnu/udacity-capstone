@@ -25,8 +25,11 @@ jobs:
       - image: cimg/aws:2022.11
     steps:
       - checkout
-      - run: aws sts get-caller-identity
+      - run: kubectl config view
       - run: aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name hello-node
+      - run: echo "$EKS_CA_DATA" > ~/.k8.ca.crt
+      - run: kubectl config set-cluster hello-node --server=$K8_SERVER --embed-certs --certificate-authority=~/.k8.ca.crt
+      - run: kubectl config view
       - run: ./update-cluster.sh
 
 workflows:
