@@ -18,6 +18,12 @@ jobs:
       - setup_remote_docker
       - checkout
       - run: docker build -t hello-node .
+  update_stack:
+    docker:
+      - image: cimg/aws:2022.11
+    steps:
+      - checkout
+      - run: ./update-cluster.sh
 
 workflows:
   hello-node:
@@ -25,4 +31,8 @@ workflows:
       - lint
       - build_image:
           requires: ['lint']
-
+          filters:
+            branches:
+              only: master
+      - update_stack:
+          requires: ['build_image']
