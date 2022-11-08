@@ -24,8 +24,6 @@ jobs:
     docker:
       - image: cimg/aws:2022.11
     steps:
-      - run: export AWS_SESSION_TOKEN=$(aws eks get-token --cluster-name hello-node|jq -r .status.token)
-      - run: echo "AWS_SESSION_TOKEN:" $AWS_SESSION_TOKEN
       - run: aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name hello-node
       - run: kubectl set image deployment.apps/$DEPLOYMENT_NAME hello-node=braxnu/hello-node --server $K8_SERVER
       - run: kubectl rollout restart deployment.apps/$DEPLOYMENT_NAME --server $K8_SERVER
