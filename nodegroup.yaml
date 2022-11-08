@@ -1,0 +1,141 @@
+StagesAvailable:
+- Original
+- Processed
+TemplateBody: !!omap
+- AWSTemplateFormatVersion: '2010-09-09'
+- Description: 'EKS Managed Nodes (SSH access: false) [created by eksctl]'
+- Mappings: !!omap
+  - ServicePrincipalPartitionMap: !!omap
+    - aws: !!omap
+      - EC2: ec2.amazonaws.com
+      - EKS: eks.amazonaws.com
+      - EKSFargatePods: eks-fargate-pods.amazonaws.com
+    - aws-cn: !!omap
+      - EC2: ec2.amazonaws.com.cn
+      - EKS: eks.amazonaws.com
+      - EKSFargatePods: eks-fargate-pods.amazonaws.com
+    - aws-us-gov: !!omap
+      - EC2: ec2.amazonaws.com
+      - EKS: eks.amazonaws.com
+      - EKSFargatePods: eks-fargate-pods.amazonaws.com
+- Resources: !!omap
+  - LaunchTemplate: !!omap
+    - Type: AWS::EC2::LaunchTemplate
+    - Properties: !!omap
+      - LaunchTemplateData: !!omap
+        - BlockDeviceMappings:
+          - !!omap
+            - DeviceName: /dev/xvda
+            - Ebs: !!omap
+              - Iops: 3000
+              - Throughput: 125
+              - VolumeSize: 80
+              - VolumeType: gp3
+        - MetadataOptions: !!omap
+          - HttpPutResponseHopLimit: 2
+          - HttpTokens: optional
+        - SecurityGroupIds:
+          - !!omap
+            - Fn::ImportValue: eksctl-hello-node-cluster::ClusterSecurityGroupId
+        - TagSpecifications:
+          - !!omap
+            - ResourceType: instance
+            - Tags:
+              - !!omap
+                - Key: Name
+                - Value: hello-node-ng-af4970ac-Node
+              - !!omap
+                - Key: alpha.eksctl.io/nodegroup-name
+                - Value: ng-af4970ac
+              - !!omap
+                - Key: alpha.eksctl.io/nodegroup-type
+                - Value: managed
+          - !!omap
+            - ResourceType: volume
+            - Tags:
+              - !!omap
+                - Key: Name
+                - Value: hello-node-ng-af4970ac-Node
+              - !!omap
+                - Key: alpha.eksctl.io/nodegroup-name
+                - Value: ng-af4970ac
+              - !!omap
+                - Key: alpha.eksctl.io/nodegroup-type
+                - Value: managed
+          - !!omap
+            - ResourceType: network-interface
+            - Tags:
+              - !!omap
+                - Key: Name
+                - Value: hello-node-ng-af4970ac-Node
+              - !!omap
+                - Key: alpha.eksctl.io/nodegroup-name
+                - Value: ng-af4970ac
+              - !!omap
+                - Key: alpha.eksctl.io/nodegroup-type
+                - Value: managed
+      - LaunchTemplateName: !!omap
+        - Fn::Sub: ${AWS::StackName}
+  - ManagedNodeGroup: !!omap
+    - Type: AWS::EKS::Nodegroup
+    - Properties: !!omap
+      - AmiType: AL2_x86_64
+      - ClusterName: hello-node
+      - InstanceTypes:
+        - m5.large
+      - Labels: !!omap
+        - alpha.eksctl.io/cluster-name: hello-node
+        - alpha.eksctl.io/nodegroup-name: ng-af4970ac
+      - LaunchTemplate: !!omap
+        - Id: !!omap
+          - Ref: LaunchTemplate
+      - NodeRole: !!omap
+        - Fn::GetAtt:
+          - NodeInstanceRole
+          - Arn
+      - NodegroupName: ng-af4970ac
+      - ScalingConfig: !!omap
+        - DesiredSize: 2
+        - MaxSize: 2
+        - MinSize: 2
+      - Subnets: !!omap
+        - Fn::Split:
+          - ','
+          - !!omap
+            - Fn::ImportValue: eksctl-hello-node-cluster::SubnetsPublic
+      - Tags: !!omap
+        - alpha.eksctl.io/nodegroup-name: ng-af4970ac
+        - alpha.eksctl.io/nodegroup-type: managed
+  - NodeInstanceRole: !!omap
+    - Type: AWS::IAM::Role
+    - Properties: !!omap
+      - AssumeRolePolicyDocument: !!omap
+        - Statement:
+          - !!omap
+            - Action:
+              - sts:AssumeRole
+            - Effect: Allow
+            - Principal: !!omap
+              - Service:
+                - !!omap
+                  - Fn::FindInMap:
+                    - ServicePrincipalPartitionMap
+                    - !!omap
+                      - Ref: AWS::Partition
+                    - EC2
+        - Version: '2012-10-17'
+      - ManagedPolicyArns:
+        - !!omap
+          - Fn::Sub: arn:${AWS::Partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+        - !!omap
+          - Fn::Sub: arn:${AWS::Partition}:iam::aws:policy/AmazonEKSWorkerNodePolicy
+        - !!omap
+          - Fn::Sub: arn:${AWS::Partition}:iam::aws:policy/AmazonEKS_CNI_Policy
+        - !!omap
+          - Fn::Sub: arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore
+      - Path: /
+      - Tags:
+        - !!omap
+          - Key: Name
+          - Value: !!omap
+            - Fn::Sub: ${AWS::StackName}/NodeInstanceRole
