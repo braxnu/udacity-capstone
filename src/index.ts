@@ -4,9 +4,9 @@ const app = fastify()
 const port = Number(process.env.PORT) || 3000
 
 app.get('/', async (req, reply) => {
-  const unused = 'welcome!'
+  const greeting = ' welcome!'
 
-  reply.send('ok buddy!')
+  reply.send('ok buddy!' + greeting)
 })
 
 ;(async () => {
