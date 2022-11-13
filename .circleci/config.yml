@@ -11,8 +11,6 @@ jobs:
       - checkout
       - run: npm i
       - run: npm test
-      - docker/install-docker
-      - docker/hadolint
   build_image:
     docker:
       - image: cimg/node:18.12.0
@@ -34,8 +32,9 @@ workflows:
   hello-node:
     jobs:
       - lint
+      - docker/hadolint
       - build_image:
-          requires: ['lint']
+          requires: ['lint', 'docker/hadolint']
           filters:
             branches:
               only: master
