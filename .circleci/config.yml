@@ -11,6 +11,8 @@ jobs:
       - checkout
       - run: npm i
       - run: npm test
+      - docker/install-docker
+      - docker/hadolint
   build_image:
     docker:
       - image: cimg/node:18.12.0
