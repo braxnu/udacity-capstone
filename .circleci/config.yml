@@ -25,7 +25,7 @@ jobs:
       - image: cimg/aws:2022.11
     steps:
       - run: aws eks --region ${AWS_DEFAULT_REGION} update-kubeconfig --name hello-nodejs
-      - run: kubectl set image deployment.apps/hello-nodejs hello-nodejs=braxnu/hello-node --server ${K8_SERVER}
+      - run: kubectl set image deployment.apps/hello-nodejs hello-node=braxnu/hello-node --server ${K8_SERVER}
       - run: kubectl rollout restart deployment.apps/hello-nodejs --server ${K8_SERVER}
 
 workflows:
